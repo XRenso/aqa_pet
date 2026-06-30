@@ -6,7 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-# нужно для пуша отчёта в ветку gh-pages
+# нужно, чтобы токен мог пушить отчёт в ветку gh-pages
 permissions:
   contents: write
 
@@ -45,25 +45,25 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
 
-      # ---- Allure report на GitHub Pages ----
-      - name: Load Allure history
+      # ---- Allure report → GitHub Pages (по офиц. гайду Allure) ----
+      - name: Load test report history
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/checkout@v5
-        continue-on-error: true        # на первом прогоне ветки gh-pages ещё нет
+        continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: Generate Allure report
+      - name: Build test report
         if: always() && github.ref == 'refs/heads/main'
         uses: simple-elf/allure-report-action@v1
         with:
-          allure_results: allure-results
           gh_pages: gh-pages
           allure_history: allure-history
+          allure_results: allure-results
           keep_reports: 20
 
-      - name: Publish report to GitHub Pages
+      - name: Publish test report
         if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
