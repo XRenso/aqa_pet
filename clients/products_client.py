@@ -11,9 +11,20 @@ class ProductsClient:
 
     TIMEOUT = 30
 
+    # Cloudflare за fakestoreapi режет дефолтный python-requests UA (403 на CI-IP)
+    HEADERS = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/json",
+    }
+
     def __init__(self, base_url: str, session: requests.Session = None):
         self.base_url = base_url.rstrip("/")
         self.session = session or requests.Session()
+        self.session.headers.update(self.HEADERS)
         retry = Retry(
             total=3,
             backoff_factor=0.5,
